@@ -1,21 +1,35 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import MainLayout from "./layouts/MainLayout";
+
+import Dashboard from "./pages/Dashboard";
+import Proveedores from "./pages/Proveedores";
+import Compras from "./pages/Compras";
+import Inventario from "./pages/Inventario";
+import Pagos from "./pages/Pagos";
+import Mapa from "./pages/Mapa";
+import Reportes from "./pages/Reportes";
+import Configuracion from "./pages/Configuracion";
+import Usuarios from "./pages/Usuarios";
+
 function App() {
   return (
-    <div className="min-h-screen bg-fondo flex items-center justify-center">
-      <div className="bg-white border border-borde rounded-2xl shadow-sm p-10 w-[420px] text-center">
-        <h1 className="text-4xl font-bold text-petroleo mb-3">
-          NEXIS
-        </h1>
-
-        <p className="text-texto mb-6">
-          Plataforma de gestión de fibra de vicuña
-        </p>
-
-        <div className="bg-tarjeta border border-borde rounded-xl p-4 text-sm text-texto">
-          Frontend React creado correctamente.
-        </div>
-      </div>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="proveedores" element={<Proveedores />} />
+          <Route path="compras" element={<Compras />} />
+          <Route path="inventario" element={<Inventario />} />
+          <Route path="pagos" element={<Pagos />} />
+          <Route path="mapa" element={<Mapa />} />
+          <Route path="reportes" element={<Reportes />} />
+          <Route path="configuracion" element={<Configuracion />} />
+          <Route path="usuarios" element={<Usuarios />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
