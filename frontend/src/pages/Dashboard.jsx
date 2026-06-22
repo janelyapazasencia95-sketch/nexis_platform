@@ -5,7 +5,6 @@ import {
   Archive,
   Banknote,
   ClipboardList,
-  CreditCard,
   FileText,
   RefreshCw,
   ShoppingCart,
@@ -115,7 +114,7 @@ function Dashboard() {
       indicador: "+12%",
       indicadorClase: "text-green-700",
       icono: ShoppingCart,
-      cajaIcono: "bg-[#dce1ff] text-[#253a82]",
+      cajaIcono: "bg-azulClaro text-azul2",
     },
     {
       titulo: "Total pagado",
@@ -123,7 +122,7 @@ function Dashboard() {
       indicador: formatoMiles(resumen?.total_pagado),
       indicadorClase: "text-green-700",
       icono: Banknote,
-      cajaIcono: "bg-[#dce1ff] text-[#253a82]",
+      cajaIcono: "bg-azulClaro text-azul2",
     },
     {
       titulo: "Deuda pendiente",
@@ -131,15 +130,15 @@ function Dashboard() {
       indicador: `${resumen?.compras_pendientes || 0} Docs`,
       indicadorClase: "text-red-600",
       icono: WalletCards,
-      cajaIcono: "bg-[#ffdad6] text-[#ba1a1a]",
+      cajaIcono: "bg-rojoClaro text-rojo",
     },
     {
       titulo: "Stock disponible",
       valor: formatoKg(resumen?.stock_disponible_kg),
       indicador: "En almacén",
-      indicadorClase: "text-[#0b1c30]",
+      indicadorClase: "text-texto",
       icono: Archive,
-      cajaIcono: "bg-[#e5deff] text-[#291575]",
+      cajaIcono: "bg-moradoClaro text-morado",
     },
     {
       titulo: "Proveedores activos",
@@ -147,14 +146,14 @@ function Dashboard() {
       indicador: `+${resumen?.proveedores_activos || 0}`,
       indicadorClase: "text-green-700",
       icono: Users,
-      cajaIcono: "bg-[#dce1ff] text-[#253a82]",
+      cajaIcono: "bg-azulClaro text-azul2",
     },
   ];
 
   if (cargando) {
     return (
-      <div className="rounded-xl border border-[#c5c5d2] bg-white p-8">
-        <p className="font-semibold text-[#454651]">
+      <div className="rounded-xl border border-borde bg-white p-8">
+        <p className="font-semibold text-textoSuave">
           Cargando panel de control...
         </p>
       </div>
@@ -171,7 +170,7 @@ function Dashboard() {
 
         <button
           onClick={cargarDashboard}
-          className="mt-4 flex items-center gap-2 rounded-lg bg-[#253a82] px-4 py-2 text-sm font-semibold text-white"
+          className="mt-4 flex items-center gap-2 rounded-lg bg-azul2 px-4 py-2 text-sm font-semibold text-white"
         >
           <RefreshCw size={16} />
           Reintentar
@@ -182,20 +181,20 @@ function Dashboard() {
 
   return (
     <div className="space-y-7">
-      <section className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+      <section className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
         <div>
-          <h2 className="text-[32px] font-bold leading-tight text-[#07226b]">
+          <h2 className="text-[28px] font-bold leading-tight text-azul sm:text-[32px]">
             Panel de Control
           </h2>
-          <p className="mt-1 text-[17px] text-[#454651]">
+          <p className="mt-1 text-sm text-textoSuave sm:text-[17px]">
             Resumen operativo y financiero del inventario de fibra.
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-4">
+        <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3 xl:w-auto">
           <button
             onClick={() => navigate("/compras")}
-            className="flex items-center gap-2 rounded-xl bg-[#253a82] px-7 py-4 text-[17px] font-bold text-white shadow-sm transition hover:bg-[#07226b]"
+            className="flex items-center justify-center gap-2 rounded-xl bg-azul2 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-azul sm:px-7 sm:py-4 sm:text-[17px]"
           >
             <ShoppingCart size={22} />
             Nueva compra
@@ -203,7 +202,7 @@ function Dashboard() {
 
           <button
             onClick={() => navigate("/pagos")}
-            className="flex items-center gap-2 rounded-xl bg-[#198d20] px-7 py-4 text-[17px] font-bold text-white shadow-sm transition hover:bg-[#126818]"
+            className="flex items-center justify-center gap-2 rounded-xl bg-verde px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-green-800 sm:px-7 sm:py-4 sm:text-[17px]"
           >
             <Banknote size={22} />
             Registrar pago
@@ -211,7 +210,7 @@ function Dashboard() {
 
           <button
             onClick={() => navigate("/compras")}
-            className="flex items-center gap-2 rounded-xl bg-[#ffb800] px-7 py-4 text-[17px] font-bold text-[#0b1c30] shadow-sm transition hover:bg-[#f3aa00]"
+            className="flex items-center justify-center gap-2 rounded-xl bg-amarillo px-5 py-3 text-sm font-bold text-texto shadow-sm transition hover:bg-yellow-500 sm:px-7 sm:py-4 sm:text-[17px]"
           >
             <ClipboardList size={22} />
             Ver pendientes
@@ -219,14 +218,14 @@ function Dashboard() {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-5">
+      <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
         {tarjetas.map((tarjeta) => {
           const Icono = tarjeta.icono;
 
           return (
             <article
               key={tarjeta.titulo}
-              className="min-h-[180px] rounded-xl border border-[#d3e4fe] bg-white p-7 shadow-sm"
+              className="min-h-[170px] rounded-xl border border-borde bg-white p-6 shadow-sm sm:min-h-[180px] sm:p-7"
             >
               <div className="mb-6 flex items-center justify-between">
                 <div
@@ -242,11 +241,11 @@ function Dashboard() {
                 </span>
               </div>
 
-              <p className="text-[17px] font-semibold text-[#454651]">
+              <p className="text-base font-semibold text-textoSuave sm:text-[17px]">
                 {tarjeta.titulo}
               </p>
 
-              <h3 className="mt-2 break-words text-[30px] font-extrabold leading-tight tracking-tight text-[#001b35]">
+              <h3 className="mt-2 break-words text-[24px] font-extrabold leading-tight tracking-tight text-[#001b35] sm:text-[28px] xl:text-[30px]">
                 {tarjeta.valor}
               </h3>
             </article>
@@ -255,8 +254,8 @@ function Dashboard() {
       </section>
 
       {alertas.length > 0 && (
-        <section className="rounded-xl border border-[#ffdad6] bg-[#fff5f3] p-5">
-          <div className="flex items-center gap-3 text-[#ba1a1a]">
+        <section className="rounded-xl border border-rojoClaro bg-[#fff5f3] p-5">
+          <div className="flex items-center gap-3 text-rojo">
             <AlertTriangle size={22} />
             <div>
               <p className="font-bold">
@@ -271,27 +270,27 @@ function Dashboard() {
       )}
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <article className="rounded-xl border border-[#d3e4fe] bg-white p-6 shadow-sm xl:col-span-2">
-          <div className="mb-5 flex items-center justify-between">
+        <article className="rounded-xl border border-borde bg-white p-5 shadow-sm sm:p-6 xl:col-span-2">
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 className="text-xl font-bold text-[#07226b]">
+              <h3 className="text-xl font-bold text-azul">
                 Compras por región
               </h3>
-              <p className="text-sm text-[#454651]">
+              <p className="text-sm text-textoSuave">
                 Kilogramos confirmados por zona altoandina.
               </p>
             </div>
 
             <button
               onClick={cargarDashboard}
-              className="flex items-center gap-2 rounded-lg bg-[#eff4ff] px-4 py-2 text-sm font-bold text-[#253a82]"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-azulSuave px-4 py-2 text-sm font-bold text-azul2 sm:w-auto"
             >
               <RefreshCw size={16} />
               Actualizar
             </button>
           </div>
 
-          <div className="h-80">
+          <div className="h-72 sm:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={regiones}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -305,7 +304,7 @@ function Dashboard() {
                   {regiones.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={index % 2 === 0 ? "#253a82" : "#87a1fe"}
+                      fill={index % 2 === 0 ? "#253A82" : "#87A1FE"}
                     />
                   ))}
                 </Bar>
@@ -314,12 +313,12 @@ function Dashboard() {
           </div>
         </article>
 
-        <article className="rounded-xl border border-[#d3e4fe] bg-white p-6 shadow-sm">
+        <article className="rounded-xl border border-borde bg-white p-5 shadow-sm sm:p-6">
           <div className="mb-5">
-            <h3 className="text-xl font-bold text-[#07226b]">
+            <h3 className="text-xl font-bold text-azul">
               Estado financiero
             </h3>
-            <p className="text-sm text-[#454651]">
+            <p className="text-sm text-textoSuave">
               Comparación entre pagado y pendiente.
             </p>
           </div>
@@ -335,8 +334,8 @@ function Dashboard() {
                   outerRadius={85}
                   paddingAngle={4}
                 >
-                  <Cell fill="#198d20" />
-                  <Cell fill="#ba1a1a" />
+                  <Cell fill="#198D20" />
+                  <Cell fill="#BA1A1A" />
                 </Pie>
                 <Tooltip formatter={(value) => formatoSoles(value)} />
               </PieChart>
@@ -361,30 +360,30 @@ function Dashboard() {
         </article>
       </section>
 
-      <section className="rounded-xl border border-[#d3e4fe] bg-white p-6 shadow-sm">
-        <div className="mb-5 flex items-center justify-between">
+      <section className="rounded-xl border border-borde bg-white p-5 shadow-sm sm:p-6">
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="text-xl font-bold text-[#07226b]">
+            <h3 className="text-xl font-bold text-azul">
               Compras recientes
             </h3>
-            <p className="text-sm text-[#454651]">
+            <p className="text-sm text-textoSuave">
               Últimas operaciones registradas en el sistema.
             </p>
           </div>
 
           <button
             onClick={() => navigate("/compras")}
-            className="flex items-center gap-2 rounded-lg bg-[#eff4ff] px-4 py-2 text-sm font-bold text-[#253a82]"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-azulSuave px-4 py-2 text-sm font-bold text-azul2 sm:w-auto"
           >
             <FileText size={16} />
             Ver compras
           </button>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="custom-scrollbar overflow-x-auto">
           <table className="w-full min-w-[850px] text-sm">
             <thead>
-              <tr className="bg-[#eff4ff] text-left text-[#454651]">
+              <tr className="bg-azulSuave text-left text-textoSuave">
                 <th className="rounded-l-lg px-4 py-3">Código</th>
                 <th className="px-4 py-3">Proveedor</th>
                 <th className="px-4 py-3">Región</th>
@@ -397,7 +396,7 @@ function Dashboard() {
             <tbody>
               {resumen?.compras_recientes?.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="py-8 text-center text-[#454651]">
+                  <td colSpan="6" className="py-8 text-center text-textoSuave">
                     No hay compras recientes.
                   </td>
                 </tr>
@@ -405,9 +404,9 @@ function Dashboard() {
                 resumen?.compras_recientes?.map((compra) => (
                   <tr
                     key={compra.codigo}
-                    className="border-b border-[#e5eeff] hover:bg-[#f8f9ff]"
+                    className="border-b border-[#e5eeff] hover:bg-fondo"
                   >
-                    <td className="px-4 py-4 font-bold text-[#253a82]">
+                    <td className="px-4 py-4 font-bold text-azul2">
                       {compra.codigo}
                     </td>
                     <td className="px-4 py-4">{compra.proveedor}</td>
@@ -419,7 +418,7 @@ function Dashboard() {
                       {formatoSoles(compra.total)}
                     </td>
                     <td className="px-4 py-4">
-                      <span className="rounded-full bg-[#dce1ff] px-3 py-1 text-xs font-bold text-[#253a82]">
+                      <span className="rounded-full bg-azulClaro px-3 py-1 text-xs font-bold text-azul2">
                         {compra.estado}
                       </span>
                     </td>
