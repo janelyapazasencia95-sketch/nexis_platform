@@ -1,10 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from "react-leaflet";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  CircleMarker,
+} from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+
 import {
-  AlertTriangle,
-  CreditCard,
   Download,
   FileText,
   Info,
@@ -12,8 +18,8 @@ import {
   Search,
   ShoppingCart,
   Star,
-  Users,
 } from "lucide-react";
+
 import api from "../services/api";
 
 const REGION_CONFIG = [
@@ -66,8 +72,8 @@ function crearIconoRegion(color, activa = false) {
     className: "",
     html: `
       <div style="
-        width: ${activa ? "34px" : "28px"};
-        height: ${activa ? "34px" : "28px"};
+        width: ${activa ? "36px" : "30px"};
+        height: ${activa ? "36px" : "30px"};
         border-radius: 9999px;
         background: ${color};
         border: 5px solid white;
@@ -84,13 +90,15 @@ function crearIconoRegion(color, activa = false) {
         "></div>
       </div>
     `,
-    iconSize: activa ? [34, 34] : [28, 28],
-    iconAnchor: activa ? [17, 17] : [14, 14],
+    iconSize: activa ? [36, 36] : [30, 30],
+    iconAnchor: activa ? [18, 18] : [15, 15],
     popupAnchor: [0, -16],
   });
 }
 
 function Mapa() {
+  const navigate = useNavigate();
+
   const [compras, setCompras] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [pagos, setPagos] = useState([]);
@@ -181,7 +189,10 @@ function Mapa() {
 
     proveedores.forEach((proveedor) => {
       const nombreRegion =
-        proveedor.region_nombre || proveedor.region_texto || proveedor.region || "";
+        proveedor.region_nombre ||
+        proveedor.region_texto ||
+        proveedor.region ||
+        "";
 
       const config = buscarConfigRegion(nombreRegion);
       if (!config) return;
@@ -262,26 +273,6 @@ function Mapa() {
       .slice(0, 3);
   }, [compras, seleccionada]);
 
-  const totalKg = resumenRegiones.reduce(
-    (suma, item) => suma + Number(item.kg_comprados || 0),
-    0
-  );
-
-  const totalMonto = resumenRegiones.reduce(
-    (suma, item) => suma + Number(item.monto_total || 0),
-    0
-  );
-
-  const totalProveedores = resumenRegiones.reduce(
-    (suma, item) => suma + Number(item.proveedores_activos || 0),
-    0
-  );
-
-  const totalDeuda = resumenRegiones.reduce(
-    (suma, item) => suma + Number(item.deuda_pendiente || 0),
-    0
-  );
-
   const formatoSoles = (valor) => {
     const numero = Number(valor || 0);
 
@@ -299,12 +290,13 @@ function Mapa() {
       maximumFractionDigits: 2,
     })} kg`;
   };
+
   const exportarPDF = () => {
-  window.open(
-    "http://127.0.0.1:8000/api/reportes/exportar-mapa-pdf/",
-    "_blank"
-  );
-};
+    window.open(
+      "http://127.0.0.1:8000/api/reportes/exportar-mapa-pdf/",
+      "_blank"
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -314,7 +306,8 @@ function Mapa() {
             Mapa Perú
           </h2>
           <p className="mt-1 max-w-3xl text-sm text-textoSuave sm:text-base">
-            Visualización geográfica real del abastecimiento nacional de fibra de vicuña.
+            Visualización geográfica real del abastecimiento nacional de fibra de
+            vicuña.
           </p>
         </div>
 
@@ -335,36 +328,6 @@ function Mapa() {
             Descargar PDF
           </button>
         </div>
-      </section>
-
-      <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <TarjetaMapa
-          titulo="Kg comprados"
-          valor={formatoKg(totalKg)}
-          icono={<ShoppingCart size={22} />}
-          clase="bg-azulClaro text-azul"
-        />
-
-        <TarjetaMapa
-          titulo="Monto total"
-          valor={formatoSoles(totalMonto)}
-          icono={<CreditCard size={22} />}
-          clase="bg-moradoClaro text-morado"
-        />
-
-        <TarjetaMapa
-          titulo="Proveedores activos"
-          valor={totalProveedores}
-          icono={<Users size={22} />}
-          clase="bg-green-100 text-green-700"
-        />
-
-        <TarjetaMapa
-          titulo="Deuda pendiente"
-          valor={formatoSoles(totalDeuda)}
-          icono={<AlertTriangle size={22} />}
-          clase="bg-rojoClaro text-rojo"
-        />
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_390px]">
@@ -401,7 +364,7 @@ function Mapa() {
                   normalizarTexto(region.nombre);
 
                 return (
-                  <div key={region.nombre}>
+                  <Fragment key={region.nombre}>
                     <CircleMarker
                       center={[region.lat, region.lng]}
                       radius={activa ? 25 : 18}
@@ -430,7 +393,7 @@ function Mapa() {
                         </div>
                       </Popup>
                     </Marker>
-                  </div>
+                  </Fragment>
                 );
               })}
             </MapContainer>
@@ -534,7 +497,7 @@ function Mapa() {
 
               <div className="mt-5 space-y-3">
                 <button
-                  onClick={() => alert(`Filtro de proveedores: ${seleccionada.nombre}`)}
+                  onClick={() => navigate("/proveedores")}
                   className="w-full rounded-lg bg-azul px-5 py-3 text-sm font-bold text-white transition hover:bg-azul2"
                 >
                   Ver proveedores en {seleccionada.nombre}
@@ -609,25 +572,6 @@ function Mapa() {
         </aside>
       </section>
     </div>
-  );
-}
-
-function TarjetaMapa({ titulo, valor, icono, clase }) {
-  return (
-    <article className="rounded-xl border border-borde bg-white p-5 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-semibold text-textoSuave">{titulo}</p>
-          <h3 className="mt-2 text-2xl font-extrabold text-azul">{valor}</h3>
-        </div>
-
-        <div
-          className={`flex h-12 w-12 items-center justify-center rounded-xl ${clase}`}
-        >
-          {icono}
-        </div>
-      </div>
-    </article>
   );
 }
 
