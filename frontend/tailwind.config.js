@@ -7,15 +7,28 @@ export default {
   theme: {
     extend: {
       colors: {
-        fondo: "#F3FBFE",
-        tarjeta: "#EAF3F7",
-        borde: "#B8D6E3",
-        petroleo: "#0B5A82",
-        petroleo2: "#1C7293",
-        marino: "#21295C",
-        texto: "#374152",
+        surface: "#f8f9ff",
+        "surface-container-lowest": "#ffffff",
+        "surface-container-low": "#eff4ff",
+        "surface-container": "#e5eeff",
+        "surface-container-high": "#dce9ff",
+        "surface-container-highest": "#d3e4fe",
+        background: "#f8f9ff",
+        primary: "#07226b",
+        "primary-container": "#253a82",
+        secondary: "#3d59b0",
+        "secondary-container": "#87a1fe",
+        "on-surface": "#0b1c30",
+        "on-surface-variant": "#454651",
+        outline: "#757682",
+        "outline-variant": "#c5c5d2",
+        error: "#ba1a1a",
+        "error-container": "#ffdad6",
+      },
+      fontFamily: {
+        jakarta: ["Plus Jakarta Sans", "sans-serif"],
       },
     },
   },
   plugins: [],
-}
+};
