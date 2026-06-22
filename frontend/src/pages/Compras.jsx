@@ -108,10 +108,8 @@ function Compras() {
       `.toLowerCase();
 
       const coincideBusqueda = texto.includes(buscar.toLowerCase());
-
       const coincideEstado =
         estado === "TODOS" ? true : compra.estado === estado;
-
       const coincideRegion = region
         ? String(compra.region) === String(region)
         : true;
@@ -256,45 +254,11 @@ function Compras() {
     }
   };
 
-  const exportarCSV = () => {
-    const encabezados = [
-      "Código",
-      "Fecha",
-      "Proveedor",
-      "Región",
-      "Kg",
-      "Precio por kg",
-      "Total",
-      "Calidad",
-      "Estado",
-    ];
-
-    const filas = comprasFiltradas.map((compra) => [
-      compra.codigo,
-      compra.fecha_compra,
-      compra.proveedor_nombre,
-      compra.region_nombre,
-      compra.kilogramos,
-      compra.precio_kg,
-      compra.total,
-      compra.calidad_texto,
-      estados[compra.estado]?.texto || compra.estado,
-    ]);
-
-    const contenido = [encabezados, ...filas]
-      .map((fila) => fila.map((celda) => `"${celda || ""}"`).join(","))
-      .join("\n");
-
-    const blob = new Blob([contenido], {
-      type: "text/csv;charset=utf-8;",
-    });
-
-    const url = URL.createObjectURL(blob);
-    const enlace = document.createElement("a");
-    enlace.href = url;
-    enlace.download = "compras_nexis.csv";
-    enlace.click();
-    URL.revokeObjectURL(url);
+  const exportarPDF = () => {
+    window.open(
+      "http://127.0.0.1:8000/api/reportes/exportar-compras-pdf/",
+      "_blank"
+    );
   };
 
   return (
@@ -312,11 +276,11 @@ function Compras() {
 
         <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:w-auto">
           <button
-            onClick={exportarCSV}
+            onClick={exportarPDF}
             className="flex items-center justify-center gap-2 rounded-lg bg-azulClaro px-5 py-3 text-sm font-bold text-azul2 transition hover:bg-borde"
           >
             <Download size={19} />
-            Exportar
+            Exportar PDF
           </button>
 
           <button
@@ -574,7 +538,7 @@ function Compras() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => abrirEditar(compra)}
-                          className="rounded-lg p-2 text-amber-600 transition hover:bg-amber-50"
+                          className="rounded-lg p-2 text-amber-600 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-40"
                           title="Editar"
                           disabled={compra.estado === "CONFIRMADA"}
                         >
