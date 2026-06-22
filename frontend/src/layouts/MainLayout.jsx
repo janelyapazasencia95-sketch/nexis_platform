@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -13,10 +13,11 @@ import {
   Bell,
   Search,
   LogOut,
-  CircleDot,
   Menu,
   X,
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import logoNexis from "../assets/nexis-logo.png";
 
 const menuItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -32,10 +33,25 @@ const menuItems = [
 
 function MainLayout() {
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const { usuario, logout } = useAuth();
+  const navigate = useNavigate();
 
   const cerrarMenu = () => {
     setMenuAbierto(false);
   };
+
+  const cerrarSesion = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
+  const nombreUsuario =
+    usuario?.first_name ||
+    usuario?.nombre ||
+    usuario?.username ||
+    "Administrador";
+
+  const iniciales = String(nombreUsuario).slice(0, 2).toUpperCase();
 
   return (
     <div className="min-h-screen bg-fondo font-jakarta text-texto">
@@ -52,17 +68,12 @@ function MainLayout() {
         }`}
       >
         <div className="mb-8 flex items-center justify-between gap-3 px-2">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-azul text-white">
-              <CircleDot size={22} />
-            </div>
-
-            <div>
-              <h1 className="text-2xl font-bold text-azul">NEXIS</h1>
-              <p className="text-[10px] uppercase tracking-widest text-gris">
-                Vicuña Fiber Management
-              </p>
-            </div>
+          <div className="flex items-center">
+            <img
+              src={logoNexis}
+              alt="Logo NEXIS"
+              className="h-16 w-auto object-contain"
+            />
           </div>
 
           <button
@@ -108,13 +119,13 @@ function MainLayout() {
         <div className="mt-6 rounded-xl border border-borde bg-azulSuave p-3">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-azul2 font-bold text-white">
-              AD
+              {iniciales}
             </div>
 
             <div>
-              <p className="text-sm font-bold text-texto">Administrador</p>
+              <p className="text-sm font-bold text-texto">{nombreUsuario}</p>
               <p className="text-[10px] uppercase tracking-wider text-textoSuave">
-                Nexis HQ
+                NEXIS
               </p>
             </div>
           </div>
@@ -150,10 +161,13 @@ function MainLayout() {
           <div className="hidden h-6 w-px bg-borde sm:block" />
 
           <span className="hidden text-sm font-semibold text-texto md:inline">
-            Administrador
+            {nombreUsuario}
           </span>
 
-          <button className="hidden items-center gap-2 rounded-lg bg-azul px-4 py-2 text-sm font-semibold text-white transition hover:bg-azul2 sm:flex">
+          <button
+            onClick={cerrarSesion}
+            className="hidden items-center gap-2 rounded-lg bg-azul px-4 py-2 text-sm font-semibold text-white transition hover:bg-azul2 sm:flex"
+          >
             <LogOut size={16} />
             Cerrar sesión
           </button>
