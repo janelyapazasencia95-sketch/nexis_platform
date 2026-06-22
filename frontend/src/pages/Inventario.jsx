@@ -262,45 +262,11 @@ function Inventario() {
     }
   };
 
-  const exportarCSV = () => {
-    const encabezados = [
-      "Código lote",
-      "Compra",
-      "Proveedor",
-      "Región",
-      "Calidad",
-      "Kg inicial",
-      "Kg actual",
-      "Ubicación",
-      "Estado",
-    ];
-
-    const filas = lotesFiltrados.map((lote) => [
-      lote.codigo,
-      lote.compra_codigo,
-      lote.proveedor_nombre,
-      lote.region_nombre,
-      lote.calidad,
-      lote.kg_inicial,
-      lote.kg_actual,
-      lote.ubicacion,
-      estados[lote.estado]?.texto || lote.estado,
-    ]);
-
-    const contenido = [encabezados, ...filas]
-      .map((fila) => fila.map((celda) => `"${celda || ""}"`).join(","))
-      .join("\n");
-
-    const blob = new Blob([contenido], {
-      type: "text/csv;charset=utf-8;",
-    });
-
-    const url = URL.createObjectURL(blob);
-    const enlace = document.createElement("a");
-    enlace.href = url;
-    enlace.download = "inventario_nexis.csv";
-    enlace.click();
-    URL.revokeObjectURL(url);
+  const exportarPDF = () => {
+    window.open(
+      "http://127.0.0.1:8000/api/reportes/exportar-inventario-pdf/",
+      "_blank"
+    );
   };
 
   return (
@@ -318,11 +284,11 @@ function Inventario() {
 
         <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 md:w-auto">
           <button
-            onClick={exportarCSV}
+            onClick={exportarPDF}
             className="flex items-center justify-center gap-2 rounded-lg bg-azulClaro px-5 py-3 text-sm font-bold text-azul2 transition hover:bg-borde"
           >
             <Download size={19} />
-            Exportar
+            Exportar PDF
           </button>
 
           <button
