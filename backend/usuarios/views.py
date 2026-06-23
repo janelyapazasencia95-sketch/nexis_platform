@@ -3,6 +3,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 
 from .serializers import UsuarioSerializer, CrearUsuarioSerializer, RolSerializer
 
@@ -32,8 +33,11 @@ def login_usuario(request):
             status=status.HTTP_403_FORBIDDEN
         )
 
+    token, created = Token.objects.get_or_create(user=usuario)
+
     return Response({
         "mensaje": "Inicio de sesión correcto.",
+        "token": token.key,
         "usuario": UsuarioSerializer(usuario).data,
     })
 

@@ -25,28 +25,37 @@ function Login() {
   const [cargando, setCargando] = useState(false);
 
   const iniciarSesion = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      setCargando(true);
-      setError("");
+  try {
+    setCargando(true);
+    setError("");
 
-      await login(username, password);
+    const usuarioLimpio = username.trim();
+    const passwordLimpio = password.trim();
 
-      if (recordar) {
-        localStorage.setItem("nexis_recordar", "true");
-      } else {
-        localStorage.removeItem("nexis_recordar");
-      }
+    await login(usuarioLimpio, passwordLimpio);
 
-      navigate("/", { replace: true });
-    } catch (error) {
-      console.error(error);
-      setError("Usuario o contraseña incorrectos.");
-    } finally {
-      setCargando(false);
+    if (recordar) {
+      localStorage.setItem("nexis_recordar", "true");
+    } else {
+      localStorage.removeItem("nexis_recordar");
     }
-  };
+
+    navigate("/", { replace: true });
+  } catch (error) {
+    console.error("Error login:", error.response?.data || error.message);
+
+    const mensaje =
+      error.response?.data?.error ||
+      error.response?.data?.detail ||
+      "Usuario o contraseña incorrectos.";
+
+    setError(mensaje);
+  } finally {
+    setCargando(false);
+  }
+};
 
   return (
     <main className="grid min-h-screen grid-cols-1 bg-fondo lg:grid-cols-[1.05fr_0.95fr]">

@@ -23,19 +23,15 @@ export function AuthProvider({ children }) {
       password,
     });
 
-    const data = respuesta.data;
+    const usuarioData = respuesta.data.usuario;
+    const token = respuesta.data.token;
 
-    const usuarioData =
-      data.usuario ||
-      data.user ||
-      data.data ||
-      {
-        username,
-        nombre: username,
-      };
+    if (!usuarioData) {
+      throw new Error("El backend no devolvió usuario.");
+    }
 
-    if (data.token) {
-      localStorage.setItem("nexis_token", data.token);
+    if (token) {
+      localStorage.setItem("nexis_token", token);
     }
 
     localStorage.setItem("nexis_usuario", JSON.stringify(usuarioData));
@@ -47,6 +43,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem("nexis_usuario");
     localStorage.removeItem("nexis_token");
+    localStorage.removeItem("nexis_recordar");
     setUsuario(null);
   };
 
