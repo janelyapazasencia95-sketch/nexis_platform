@@ -13,7 +13,11 @@ def api_estado(request):
     })
 
 
+from config.export_wrappers import exportar_compras_excel_seguro, exportar_compras_pdf_seguro
+
 urlpatterns = [
+    path('api/reportes/exportar-compras-excel/', exportar_compras_excel_seguro, name='exportar_compras_excel_seguro'),
+    path('api/reportes/exportar-compras-pdf/', exportar_compras_pdf_seguro, name='exportar_compras_pdf_seguro'),
     path('admin/', admin.site.urls),
     path('api/estado/', api_estado),
 
