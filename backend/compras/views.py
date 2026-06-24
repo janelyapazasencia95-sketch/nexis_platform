@@ -1,3 +1,4 @@
+from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum, Count
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -8,6 +9,7 @@ from .serializers import CompraSerializer
 
 
 class CompraViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Compra.objects.select_related("proveedor", "region").all()
     serializer_class = CompraSerializer
 

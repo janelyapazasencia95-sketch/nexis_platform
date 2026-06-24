@@ -1,3 +1,4 @@
+from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum, Count
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -8,6 +9,7 @@ from .serializers import LoteInventarioSerializer, MovimientoInventarioSerialize
 
 
 class LoteInventarioViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = LoteInventario.objects.select_related(
         "compra",
         "compra__proveedor",
@@ -51,5 +53,6 @@ class LoteInventarioViewSet(viewsets.ModelViewSet):
 
 
 class MovimientoInventarioViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = MovimientoInventario.objects.select_related("lote").all()
     serializer_class = MovimientoInventarioSerializer

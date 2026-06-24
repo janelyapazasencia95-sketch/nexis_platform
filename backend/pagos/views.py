@@ -1,3 +1,4 @@
+from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -9,6 +10,7 @@ from .serializers import PagoSerializer
 
 
 class PagoViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Pago.objects.select_related("compra", "compra__proveedor").all()
     serializer_class = PagoSerializer
 
