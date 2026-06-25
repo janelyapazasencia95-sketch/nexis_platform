@@ -1,8 +1,10 @@
 from decimal import Decimal
+import uuid
 
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Sum
+from django.utils import timezone
 
 
 class Pago(models.Model):
@@ -24,7 +26,7 @@ class Pago(models.Model):
     compra = models.ForeignKey(
         "compras.Compra",
         on_delete=models.PROTECT,
-        related_name="pagos"
+        related_name="pagos",
     )
 
     fecha_pago = models.DateField()
@@ -33,19 +35,19 @@ class Pago(models.Model):
     metodo = models.CharField(
         max_length=30,
         choices=METODO_CHOICES,
-        default="EFECTIVO"
+        default="EFECTIVO",
     )
 
     estado = models.CharField(
         max_length=20,
         choices=ESTADO_CHOICES,
-        default="PROCESADO"
+        default="PROCESADO",
     )
 
     operacion = models.CharField(
         max_length=100,
         blank=True,
-        help_text="Número de operación, voucher o referencia"
+        help_text="Número de operación, voucher o referencia",
     )
 
     observacion = models.TextField(blank=True)
@@ -65,16 +67,13 @@ class Pago(models.Model):
 
         pagos_actuales = Pago.objects.filter(
             compra=self.compra,
-            estado="PROCESADO"
+            estado="PROCESADO",
         )
 
         if self.pk:
             pagos_actuales = pagos_actuales.exclude(pk=self.pk)
 
-        total_pagado = pagos_actuales.aggregate(
-            total=Sum("monto")
-        )["total"] or Decimal("0.00")
-
+        total_pagado = pagos_actuales.aggregate(total=Sum("monto"))["total"] or Decimal("0.00")
         saldo = self.compra.total - total_pagado
 
         if self.estado == "PROCESADO" and self.monto > saldo:
@@ -83,12 +82,20 @@ class Pago(models.Model):
             )
 
     def save(self, *args, **kwargs):
-        if not self.codigo:
-            ultimo_id = Pago.objects.count() + 1
-            self.codigo = f"PAG-2024-{ultimo_id:03d}"
+        if self.codigo:
+            self.full_clean()
+            super().save(*args, **kwargs)
+            return
 
-        self.full_clean()
-        super().save(*args, **kwargs)
+        anio = self.fecha_pago.year if self.fecha_pago else timezone.localdate().year
+
+        with transaction.atomic():
+            self.codigo = f"TMP-{uuid.uuid4().hex[:12]}"
+            self.full_clean()
+            super().save(*args, **kwargs)
+
+            self.codigo = f"PAG-{anio}-{self.id:03d}"
+            super().save(update_fields=["codigo"])
 
     def __str__(self):
         return f"{self.codigo} - S/ {self.monto}"

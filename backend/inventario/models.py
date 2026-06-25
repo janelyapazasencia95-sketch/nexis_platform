@@ -1,4 +1,7 @@
-from django.db import models
+import uuid
+
+from django.db import models, transaction
+from django.utils import timezone
 
 
 class LoteInventario(models.Model):
@@ -13,13 +16,13 @@ class LoteInventario(models.Model):
     compra = models.OneToOneField(
         "compras.Compra",
         on_delete=models.PROTECT,
-        related_name="lote_inventario"
+        related_name="lote_inventario",
     )
 
     region = models.ForeignKey(
         "zonas.Region",
         on_delete=models.PROTECT,
-        related_name="lotes"
+        related_name="lotes",
     )
 
     calidad = models.CharField(max_length=30)
@@ -28,13 +31,13 @@ class LoteInventario(models.Model):
 
     ubicacion = models.CharField(
         max_length=150,
-        default="Almacén Central"
+        default="Almacén Central",
     )
 
     estado = models.CharField(
         max_length=20,
         choices=ESTADO_CHOICES,
-        default="DISPONIBLE"
+        default="DISPONIBLE",
     )
 
     fecha_creacion = models.DateTimeField(auto_now_add=True)
@@ -45,14 +48,24 @@ class LoteInventario(models.Model):
         ordering = ["-fecha_creacion"]
 
     def save(self, *args, **kwargs):
-        if not self.codigo:
-            ultimo_id = LoteInventario.objects.count() + 1
-            self.codigo = f"LOTE-2024-{ultimo_id:03d}"
-
         if self.kg_actual <= 0:
             self.estado = "AGOTADO"
 
-        super().save(*args, **kwargs)
+        if self.codigo:
+            super().save(*args, **kwargs)
+            return
+
+        anio = timezone.localdate().year
+
+        if self.compra_id and getattr(self.compra, "fecha_compra", None):
+            anio = self.compra.fecha_compra.year
+
+        with transaction.atomic():
+            self.codigo = f"TMP-{uuid.uuid4().hex[:12]}"
+            super().save(*args, **kwargs)
+
+            self.codigo = f"LOTE-{anio}-{self.id:03d}"
+            super().save(update_fields=["codigo", "estado"])
 
     def __str__(self):
         return f"{self.codigo} - {self.kg_actual} kg"
@@ -68,7 +81,7 @@ class MovimientoInventario(models.Model):
     lote = models.ForeignKey(
         LoteInventario,
         on_delete=models.PROTECT,
-        related_name="movimientos"
+        related_name="movimientos",
     )
 
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
