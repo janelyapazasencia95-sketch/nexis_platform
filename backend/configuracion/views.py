@@ -57,3 +57,23 @@ def regiones_activas(request):
     regiones = Region.objects.filter(activo=True)
     serializer = RegionSerializer(regiones, many=True)
     return Response(serializer.data)
+# ============================================================
+# SEGURIDAD DE CONFIGURACIÓN - NEXIS
+# Solo administradores pueden modificar configuración del sistema.
+# ============================================================
+
+from rest_framework.permissions import IsAdminUser
+
+for _name, _obj in list(globals().items()):
+    if _name.endswith("ViewSet"):
+        _obj.permission_classes = [IsAdminUser]
+
+
+# === NEXIS CONFIGURACION ADMIN SECURITY ===
+# Solo administradores pueden gestionar configuración.
+from rest_framework.permissions import IsAdminUser
+
+for _name, _obj in list(globals().items()):
+    if _name.endswith("ViewSet"):
+        _obj.permission_classes = [IsAdminUser]
+# === END NEXIS CONFIGURACION ADMIN SECURITY ===
