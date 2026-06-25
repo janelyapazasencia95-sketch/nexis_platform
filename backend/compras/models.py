@@ -49,10 +49,26 @@ class Compra(models.Model):
         default="ESTANDAR",
     )
 
+    calidad_fibra = models.ForeignKey(
+        "configuracion.CalidadFibra",
+        on_delete=models.PROTECT,
+        related_name="compras",
+        null=True,
+        blank=True,
+    )
+
     estado = models.CharField(
         max_length=20,
         choices=ESTADO_CHOICES,
         default="BORRADOR",
+    )
+
+    estado_procesamiento = models.ForeignKey(
+        "configuracion.EstadoProcesamiento",
+        on_delete=models.PROTECT,
+        related_name="compras",
+        null=True,
+        blank=True,
     )
 
     observacion = models.TextField(blank=True)
