@@ -220,3 +220,13 @@ def me_view(request):
         },
         status=status.HTTP_200_OK,
     )
+
+# ============================================================
+# SEGURIDAD DE USUARIOS Y ROLES - NEXIS
+# Solo administradores pueden gestionar usuarios y roles.
+# ============================================================
+
+from rest_framework.permissions import IsAdminUser
+
+UsuarioViewSet.permission_classes = [IsAdminUser]
+RolViewSet.permission_classes = [IsAdminUser]
