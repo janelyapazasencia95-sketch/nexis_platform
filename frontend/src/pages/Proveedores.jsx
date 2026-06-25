@@ -1,3 +1,4 @@
+import { downloadFile } from "../services/download";
 import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
@@ -227,10 +228,7 @@ function Proveedores() {
   };
 
   const exportarPDF = () => {
-    window.open(
-      "http://127.0.0.1:8000/api/reportes/exportar-proveedores-pdf/",
-      "_blank"
-    );
+    downloadFile("/api/reportes/exportar-proveedores-pdf/", "reporte_proveedores.pdf");
   };
 
   return (

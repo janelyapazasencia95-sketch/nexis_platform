@@ -1,3 +1,4 @@
+import { downloadFile } from "../services/download";
 import { useEffect, useMemo, useState } from "react";
 import {
   Award,
@@ -229,17 +230,11 @@ function Reportes() {
   };
 
   const exportarExcel = () => {
-    window.open(
-      "http://127.0.0.1:8000/api/reportes/exportar-compras-excel/",
-      "_blank"
-    );
+    downloadFile("/api/reportes/exportar-compras-excel/", "reporte_compras.xlsx");
   };
 
   const exportarPDF = () => {
-    window.open(
-      "http://127.0.0.1:8000/api/reportes/exportar-compras-pdf/",
-      "_blank"
-    );
+    downloadFile("/api/reportes/exportar-compras-pdf/", "reporte_compras.pdf");
   };
 
   const verDetalle = (compra) => {

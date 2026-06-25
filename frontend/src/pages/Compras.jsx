@@ -1,3 +1,4 @@
+import { downloadFile } from "../services/download";
 import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
@@ -255,10 +256,7 @@ function Compras() {
   };
 
   const exportarPDF = () => {
-    window.open(
-      "http://127.0.0.1:8000/api/reportes/exportar-compras-pdf/",
-      "_blank"
-    );
+    downloadFile("/api/reportes/exportar-compras-pdf/", "reporte_compras.pdf");
   };
 
   return (

@@ -1,3 +1,4 @@
+import { downloadFile } from "../services/download";
 import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
@@ -263,10 +264,7 @@ function Inventario() {
   };
 
   const exportarPDF = () => {
-    window.open(
-      "http://127.0.0.1:8000/api/reportes/exportar-inventario-pdf/",
-      "_blank"
-    );
+    downloadFile("/api/reportes/exportar-inventario-pdf/", "reporte_inventario.pdf");
   };
 
   return (

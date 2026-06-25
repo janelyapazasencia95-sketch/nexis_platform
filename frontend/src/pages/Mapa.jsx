@@ -1,3 +1,4 @@
+import { downloadFile } from "../services/download";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -292,10 +293,7 @@ function Mapa() {
   };
 
   const exportarPDF = () => {
-    window.open(
-      "http://127.0.0.1:8000/api/reportes/exportar-mapa-pdf/",
-      "_blank"
-    );
+    downloadFile("/api/reportes/exportar-mapa-pdf/", "reporte_mapa.pdf");
   };
 
   return (
