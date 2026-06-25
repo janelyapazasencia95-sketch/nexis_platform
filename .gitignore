@@ -26,3 +26,6 @@ backend/staticfiles/
 *.pyc
 .env
 
+backend/.env
+backend/.env.*
+backend/*.backup
