@@ -13,11 +13,23 @@ def api_estado(request):
     })
 
 
-from config.export_wrappers import exportar_compras_excel_seguro, exportar_compras_pdf_seguro
+
+from config.export_wrappers import (
+    exportar_compras_excel_seguro,
+    exportar_compras_pdf_seguro,
+    exportar_proveedores_pdf_seguro,
+    exportar_inventario_pdf_seguro,
+    exportar_pagos_pdf_seguro,
+    exportar_mapa_pdf_seguro,
+)
 
 urlpatterns = [
     path('api/reportes/exportar-compras-excel/', exportar_compras_excel_seguro, name='exportar_compras_excel_seguro'),
     path('api/reportes/exportar-compras-pdf/', exportar_compras_pdf_seguro, name='exportar_compras_pdf_seguro'),
+    path('api/reportes/exportar-proveedores-pdf/', exportar_proveedores_pdf_seguro, name='exportar_proveedores_pdf_seguro'),
+    path('api/reportes/exportar-inventario-pdf/', exportar_inventario_pdf_seguro, name='exportar_inventario_pdf_seguro'),
+    path('api/reportes/exportar-pagos-pdf/', exportar_pagos_pdf_seguro, name='exportar_pagos_pdf_seguro'),
+    path('api/reportes/exportar-mapa-pdf/', exportar_mapa_pdf_seguro, name='exportar_mapa_pdf_seguro'),
     path('admin/', admin.site.urls),
     path('api/estado/', api_estado),
 

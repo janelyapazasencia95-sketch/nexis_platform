@@ -54,3 +54,19 @@ def exportar_compras_excel_seguro(request, *args, **kwargs):
 
 def exportar_compras_pdf_seguro(request, *args, **kwargs):
     return _llamar_vista_original("exportar_compras_pdf", request, *args, **kwargs)
+
+
+def exportar_proveedores_pdf_seguro(request, *args, **kwargs):
+    return _llamar_vista_original("exportar_proveedores_pdf", request, *args, **kwargs)
+
+
+def exportar_inventario_pdf_seguro(request, *args, **kwargs):
+    return _llamar_vista_original("exportar_inventario_pdf", request, *args, **kwargs)
+
+
+def exportar_pagos_pdf_seguro(request, *args, **kwargs):
+    return _llamar_vista_original("exportar_pagos_pdf", request, *args, **kwargs)
+
+
+def exportar_mapa_pdf_seguro(request, *args, **kwargs):
+    return _llamar_vista_original("exportar_mapa_pdf", request, *args, **kwargs)
