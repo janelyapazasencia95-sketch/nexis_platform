@@ -30,3 +30,4 @@ backend/.env
 backend/.env.*
 backend/*.backup
 backend/.db_password_tmp
+backend/backups/
