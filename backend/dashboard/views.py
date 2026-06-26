@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db.models import Sum, Count
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -6,6 +8,11 @@ from proveedores.models import Proveedor
 from compras.models import Compra
 from inventario.models import LoteInventario
 from pagos.models import Pago
+from configuracion.models import ConfiguracionSistema
+
+
+def obtener_configuracion():
+    return ConfiguracionSistema.objects.order_by("id").first()
 
 
 @api_view(["GET"])
@@ -38,7 +45,9 @@ def resumen_dashboard(request):
 
     compras_recientes = Compra.objects.select_related(
         "proveedor",
-        "region"
+        "region",
+        "calidad_fibra",
+        "estado_procesamiento",
     ).order_by("-fecha_compra")[:5]
 
     compras_recientes_data = []
@@ -52,7 +61,8 @@ def resumen_dashboard(request):
             "kilogramos": compra.kilogramos,
             "total": compra.total,
             "estado": compra.estado,
-            "calidad": compra.get_calidad_display(),
+            "calidad": compra.calidad_fibra.nombre if compra.calidad_fibra else compra.get_calidad_display(),
+            "estado_procesamiento": compra.estado_procesamiento.nombre if compra.estado_procesamiento else None,
         })
 
     return Response({
@@ -113,8 +123,18 @@ def pagos_por_estado(request):
 
 @api_view(["GET"])
 def alertas_stock(request):
+    configuracion = obtener_configuracion()
+
+    if configuracion:
+        umbral_stock_bajo = configuracion.umbral_stock_bajo
+
+        if not configuracion.alerta_stock_activa:
+            return Response([])
+    else:
+        umbral_stock_bajo = Decimal("50.00")
+
     lotes_bajos = LoteInventario.objects.filter(
-        kg_actual__lte=50,
+        kg_actual__lte=umbral_stock_bajo,
         estado="DISPONIBLE"
     ).select_related("region", "compra")
 
@@ -128,6 +148,7 @@ def alertas_stock(request):
             "kg_actual": lote.kg_actual,
             "ubicacion": lote.ubicacion,
             "estado": lote.estado,
+            "umbral_stock_bajo": umbral_stock_bajo,
         })
 
     return Response(resultado)
