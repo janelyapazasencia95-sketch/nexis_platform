@@ -15,6 +15,7 @@ import Mapa from "./pages/Mapa";
 import Reportes from "./pages/Reportes";
 import Configuracion from "./pages/Configuracion";
 import Usuarios from "./pages/Usuarios";
+import NoEncontrado from "./pages/NoEncontrado";
 
 function App() {
   return (
@@ -40,6 +41,8 @@ function App() {
             <Route path="reportes" element={<Reportes />} />
             <Route path="configuracion" element={<Configuracion />} />
             <Route path="usuarios" element={<Usuarios />} />
+
+            <Route path="*" element={<NoEncontrado />} />
           </Route>
         </Routes>
       </BrowserRouter>
