@@ -19,7 +19,7 @@ class Provincia(models.Model):
     region = models.ForeignKey(
         Region,
         on_delete=models.CASCADE,
-        related_name="provincias"
+        related_name="provincias",
     )
     nombre = models.CharField(max_length=100)
     activo = models.BooleanField(default=True)
@@ -28,7 +28,7 @@ class Provincia(models.Model):
         verbose_name = "Provincia"
         verbose_name_plural = "Provincias"
         ordering = ["region__nombre", "nombre"]
-        unique_together = ("region", "nombre")
+        unique_together = (("region", "nombre"),)
 
     def __str__(self):
         return f"{self.nombre} - {self.region.nombre}"
@@ -38,7 +38,7 @@ class Comunidad(models.Model):
     provincia = models.ForeignKey(
         Provincia,
         on_delete=models.CASCADE,
-        related_name="comunidades"
+        related_name="comunidades",
     )
     nombre = models.CharField(max_length=150)
     activo = models.BooleanField(default=True)
@@ -46,7 +46,8 @@ class Comunidad(models.Model):
     class Meta:
         verbose_name = "Comunidad"
         verbose_name_plural = "Comunidades"
-        ordering = ["nombre"]
+        ordering = ["provincia__nombre", "nombre"]
+        unique_together = (("provincia", "nombre"),)
 
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} - {self.provincia.nombre}"
