@@ -10,8 +10,8 @@ import {
   User,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import imagenVicuna from "../assets/login-vicuna.png";
-import logoNexis from "../assets/nexis-logo.png";
+import imagenVicuna from "../assets/login-vicuna.webp";
+import logoNexis from "../assets/nexis-logo.webp";
 
 function Login() {
   const navigate = useNavigate();

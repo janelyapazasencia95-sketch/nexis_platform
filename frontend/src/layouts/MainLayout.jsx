@@ -17,7 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import logoNexis from "../assets/nexis-logo.png";
+import logoNexis from "../assets/nexis-logo.webp";
 
 const menuItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
