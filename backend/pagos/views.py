@@ -1,5 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -21,7 +21,11 @@ class PagoViewSet(viewsets.ModelViewSet):
         estado = self.request.query_params.get("estado")
 
         if buscar:
-            queryset = queryset.filter(codigo__icontains=buscar) | queryset.filter(compra__codigo__icontains=buscar) | queryset.filter(compra__proveedor__nombre__icontains=buscar)
+            queryset = queryset.filter(
+                Q(codigo__icontains=buscar)
+                | Q(compra__codigo__icontains=buscar)
+                | Q(compra__proveedor__nombre__icontains=buscar)
+            )
 
         if metodo:
             queryset = queryset.filter(metodo=metodo)
