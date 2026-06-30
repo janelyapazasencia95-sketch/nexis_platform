@@ -1,5 +1,7 @@
 import csv
 from django.http import HttpResponse
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment
 from django.db.models import Sum, Count
 from proveedores.models import Proveedor
 from .pdf_utils import generar_pdf_tabla
@@ -174,13 +176,13 @@ def exportar_compras_excel(request):
     compras = Compra.objects.select_related(
         "proveedor",
         "region"
-    ).all()
+    ).order_by("-fecha_compra")
 
-    response = HttpResponse(content_type="text/csv; charset=utf-8")
-    response["Content-Disposition"] = 'attachment; filename="reporte_compras_nexis.csv"'
+    workbook = Workbook()
+    hoja = workbook.active
+    hoja.title = "Compras NEXIS"
 
-    writer = csv.writer(response)
-    writer.writerow([
+    encabezados = [
         "Código",
         "Fecha",
         "Proveedor",
@@ -190,21 +192,56 @@ def exportar_compras_excel(request):
         "Total",
         "Calidad",
         "Estado",
-    ])
+    ]
+
+    hoja.append(encabezados)
+
+    estilo_encabezado = Font(bold=True, color="FFFFFF")
+    relleno_encabezado = PatternFill(
+        start_color="0B5A82",
+        end_color="0B5A82",
+        fill_type="solid",
+    )
+
+    for celda in hoja[1]:
+        celda.font = estilo_encabezado
+        celda.fill = relleno_encabezado
+        celda.alignment = Alignment(horizontal="center")
 
     for compra in compras:
-        writer.writerow([
+        hoja.append([
             compra.codigo,
-            compra.fecha_compra,
-            compra.proveedor.nombre,
-            compra.region.nombre,
-            compra.kilogramos,
-            compra.precio_kg,
-            compra.total,
+            compra.fecha_compra.strftime("%d/%m/%Y") if compra.fecha_compra else "",
+            compra.proveedor.nombre if compra.proveedor else "",
+            compra.region.nombre if compra.region else "",
+            float(compra.kilogramos or 0),
+            float(compra.precio_kg or 0),
+            float(compra.total or 0),
             compra.get_calidad_display(),
             compra.get_estado_display(),
         ])
 
+    anchos = {
+        "A": 18,
+        "B": 14,
+        "C": 32,
+        "D": 20,
+        "E": 12,
+        "F": 16,
+        "G": 16,
+        "H": 18,
+        "I": 16,
+    }
+
+    for columna, ancho in anchos.items():
+        hoja.column_dimensions[columna].width = ancho
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = 'attachment; filename="reporte_compras_nexis.xlsx"'
+
+    workbook.save(response)
     return response
 
 

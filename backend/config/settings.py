@@ -27,7 +27,10 @@ if env_file.exists():
                 except ValueError:
                     pass
 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'nexis-dev-secret-key')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY no está configurada en el archivo .env")
 
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
