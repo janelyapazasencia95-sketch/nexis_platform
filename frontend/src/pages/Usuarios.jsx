@@ -53,7 +53,7 @@ function Usuarios() {
     username: "",
     email: "",
     rol: "",
-    password: "Nexis12345",
+    password: "",
     is_active: true,
   });
 
@@ -268,7 +268,7 @@ function Usuarios() {
       username: "",
       email: "",
       rol: roles[0]?.id || "",
-      password: "Nexis12345",
+      password: "",
       is_active: true,
     });
     setDrawerAbierto(true);
@@ -300,8 +300,16 @@ function Usuarios() {
   };
 
   const generarPassword = () => {
-    const numero = Math.floor(1000 + Math.random() * 9000);
-    cambiarFormulario("password", `Nexis${numero}`);
+    const caracteres =
+      "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789@$#";
+    const arreglo = new Uint32Array(12);
+    window.crypto.getRandomValues(arreglo);
+
+    const passwordGenerado = Array.from(arreglo)
+      .map((numero) => caracteres[numero % caracteres.length])
+      .join("");
+
+    cambiarFormulario("password", passwordGenerado);
   };
 
   const guardarUsuario = async (e) => {
@@ -310,6 +318,11 @@ function Usuarios() {
     const partesNombre = formulario.nombre_completo.trim().split(" ");
     const first_name = partesNombre[0] || "";
     const last_name = partesNombre.slice(1).join(" ");
+
+    if (!editando && !formulario.password) {
+      alert("La contraseña es obligatoria para crear un usuario nuevo.");
+      return;
+    }
 
     const datos = {
       username: formulario.username,
