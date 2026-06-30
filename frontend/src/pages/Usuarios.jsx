@@ -38,6 +38,8 @@ function Usuarios() {
   const [buscar, setBuscar] = useState("");
   const [filtroRol, setFiltroRol] = useState("TODOS");
   const [filtroEstado, setFiltroEstado] = useState("TODOS");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const usuariosPorPagina = 10;
 
   const [drawerAbierto, setDrawerAbierto] = useState(false);
   const [editando, setEditando] = useState(null);
@@ -214,6 +216,32 @@ function Usuarios() {
       return coincideBusqueda && coincideRol && coincideEstado;
     });
   }, [usuarios, buscar, filtroRol, filtroEstado, roles]);
+
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(usuariosFiltrados.length / usuariosPorPagina)
+  );
+
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [buscar, filtroRol, filtroEstado]);
+
+  useEffect(() => {
+    if (paginaActual > totalPaginas) {
+      setPaginaActual(totalPaginas);
+    }
+  }, [paginaActual, totalPaginas]);
+
+  const indiceInicial = (paginaActual - 1) * usuariosPorPagina;
+  const indiceFinal = Math.min(
+    indiceInicial + usuariosPorPagina,
+    usuariosFiltrados.length
+  );
+
+  const usuariosPaginados = usuariosFiltrados.slice(
+    indiceInicial,
+    indiceFinal
+  );
 
   const totalUsuarios = usuarios.length;
   const usuariosActivos = usuarios.filter((usuario) => usuario.is_active).length;
@@ -610,7 +638,7 @@ function Usuarios() {
                   </td>
                 </tr>
               ) : (
-                usuariosFiltrados.map((usuario, index) => {
+                usuariosPaginados.map((usuario, index) => {
                   const rolPrincipal = obtenerRolPrincipal(usuario);
                   const avatar = obtenerAvatar(usuario, index);
 
@@ -717,18 +745,33 @@ function Usuarios() {
 
         <div className="flex flex-col gap-3 border-t border-borde bg-azulSuave px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-textoSuave">
-            Mostrando 1-{usuariosFiltrados.length} de {usuarios.length} usuarios
+            {usuariosFiltrados.length === 0
+              ? "Mostrando 0 de 0 usuarios"
+              : `Mostrando ${indiceInicial + 1}-${indiceFinal} de ${usuariosFiltrados.length} usuarios`}
           </p>
 
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <button
-              disabled
-              className="rounded-lg border border-borde bg-white px-4 py-1 text-sm text-textoSuave disabled:opacity-50"
+              type="button"
+              disabled={paginaActual === 1}
+              onClick={() => setPaginaActual((pagina) => Math.max(pagina - 1, 1))}
+              className="rounded-lg border border-borde bg-white px-4 py-1 text-sm text-textoSuave disabled:cursor-not-allowed disabled:opacity-50"
             >
               Anterior
             </button>
 
-            <button className="rounded-lg bg-azul px-4 py-1 text-sm font-bold text-white">
+            <span className="rounded-lg bg-white px-3 py-1 text-sm font-semibold text-textoSuave">
+              Página {paginaActual} de {totalPaginas}
+            </span>
+
+            <button
+              type="button"
+              disabled={paginaActual === totalPaginas}
+              onClick={() =>
+                setPaginaActual((pagina) => Math.min(pagina + 1, totalPaginas))
+              }
+              className="rounded-lg bg-azul px-4 py-1 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
               Siguiente
             </button>
           </div>
