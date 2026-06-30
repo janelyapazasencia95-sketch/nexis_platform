@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
@@ -24,6 +24,10 @@ function Login() {
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
 
+  useEffect(() => {
+    setRecordar(localStorage.getItem("nexis_recordar") === "true");
+  }, []);
+
   const iniciarSesion = async (e) => {
   e.preventDefault();
 
@@ -34,13 +38,7 @@ function Login() {
     const usuarioLimpio = username.trim();
     const passwordLimpio = password.trim();
 
-    await login(usuarioLimpio, passwordLimpio);
-
-    if (recordar) {
-      localStorage.setItem("nexis_recordar", "true");
-    } else {
-      localStorage.removeItem("nexis_recordar");
-    }
+    await login(usuarioLimpio, passwordLimpio, recordar);
 
     navigate("/", { replace: true });
   } catch (error) {
