@@ -22,6 +22,7 @@ function Login() {
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [recordar, setRecordar] = useState(false);
   const [error, setError] = useState("");
+  const [mensajeRecuperacion, setMensajeRecuperacion] = useState("");
   const [cargando, setCargando] = useState(false);
 
   useEffect(() => {
@@ -34,6 +35,7 @@ function Login() {
   try {
     setCargando(true);
     setError("");
+    setMensajeRecuperacion("");
 
     const usuarioLimpio = username.trim();
     const passwordLimpio = password.trim();
@@ -140,6 +142,13 @@ function Login() {
               </div>
             )}
 
+            {mensajeRecuperacion && (
+              <div className="mb-5 flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 text-[#0B5A82]">
+                <ShieldCheck size={20} />
+                <p className="text-sm font-semibold">{mensajeRecuperacion}</p>
+              </div>
+            )}
+
             <form onSubmit={iniciarSesion} className="space-y-5">
               <div>
                 <label className="mb-2 block text-sm font-bold text-texto">
@@ -205,6 +214,12 @@ function Login() {
 
                 <button
                   type="button"
+                  onClick={() => {
+                    setError("");
+                    setMensajeRecuperacion(
+                      "Para recuperar tu acceso, contacta al administrador del sistema NEXIS."
+                    );
+                  }}
                   className="text-sm font-bold text-azul hover:underline"
                 >
                   ¿Olvidaste tu contraseña?
