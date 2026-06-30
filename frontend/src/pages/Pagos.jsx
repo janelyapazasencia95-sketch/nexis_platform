@@ -338,9 +338,9 @@ function Pagos() {
   };
 
   const colorSaldo = (estado) => {
-    if (estado === "COMPLETADO") return "text-outline";
+    if (estado === "COMPLETADO") return "text-textoSuave";
     if (estado === "PARCIAL") return "text-[#a16207]";
-    return "text-error";
+    return "text-rojo";
   };
 
   return (
@@ -401,7 +401,7 @@ function Pagos() {
           </h3>
 
           <div className="mt-5 h-1.5 w-full rounded-full bg-azulSuave">
-            <div className="h-1.5 w-[65%] rounded-full bg-secondary" />
+            <div className="h-1.5 w-[65%] rounded-full bg-azulSuave" />
           </div>
         </article>
 
@@ -429,10 +429,10 @@ function Pagos() {
 
         <article className="rounded-xl border border-borde bg-white p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-rojoClaro text-error">
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-rojoClaro text-rojo">
               <AlertTriangle size={22} />
             </span>
-            <span className="rounded-full bg-rojoClaro px-3 py-1 text-xs font-bold text-error">
+            <span className="rounded-full bg-rojoClaro px-3 py-1 text-xs font-bold text-rojo">
               Crítico
             </span>
           </div>
@@ -440,12 +440,12 @@ function Pagos() {
           <p className="text-sm font-bold uppercase tracking-wider text-textoSuave">
             Deudas vencidas
           </p>
-          <h3 className="mt-1 text-2xl font-extrabold text-error">
+          <h3 className="mt-1 text-2xl font-extrabold text-rojo">
             {formatoSoles(deudasVencidas)}
           </h3>
 
           <div className="mt-5 h-1.5 w-full rounded-full bg-rojoClaro">
-            <div className="h-1.5 w-[30%] rounded-full bg-error" />
+            <div className="h-1.5 w-[30%] rounded-full bg-rojoClaro" />
           </div>
         </article>
       </section>
@@ -485,7 +485,7 @@ function Pagos() {
 
       {error && (
         <section className="rounded-xl border border-red-200 bg-white p-5">
-          <div className="flex items-center gap-3 text-error">
+          <div className="flex items-center gap-3 text-rojo">
             <AlertTriangle size={22} />
             <p className="font-semibold">{error}</p>
           </div>
@@ -627,7 +627,7 @@ function Pagos() {
                           <button
                             onClick={() => abrirRegistrarPago(fila.id)}
                             disabled={fila.saldoPendiente <= 0}
-                            className="rounded p-1.5 text-textoSuave hover:text-secondary disabled:cursor-not-allowed disabled:opacity-40"
+                            className="rounded p-1.5 text-textoSuave hover:text-textoSuave disabled:cursor-not-allowed disabled:opacity-40"
                             title="Registrar pago"
                           >
                             <Edit size={20} />
@@ -700,16 +700,16 @@ function Pagos() {
                   key={item.id}
                   className={`flex items-center justify-between rounded p-4 ${
                     index === 0
-                      ? "border-l-4 border-error bg-rojoClaro/30"
+                      ? "border-l-4 border-red-200 bg-rojoClaro/30"
                       : index === 1
-                        ? "border-l-4 border-secondary bg-azulSuave"
+                        ? "border-l-4 border-borde bg-azulSuave"
                         : "border-l-4 border-gris bg-azulSuave/70"
                   }`}
                 >
                   <div>
                     <p
                       className={`font-bold ${
-                        index === 0 ? "text-error" : "text-azul"
+                        index === 0 ? "text-rojo" : "text-azul"
                       }`}
                     >
                       {item.proveedor}
@@ -721,7 +721,7 @@ function Pagos() {
 
                   <p
                     className={`font-bold ${
-                      index === 0 ? "text-error" : "text-azul"
+                      index === 0 ? "text-rojo" : "text-azul"
                     }`}
                   >
                     {formatoSoles(item.saldoPendiente)}
