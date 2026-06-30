@@ -11,7 +11,6 @@ import {
   Settings,
   User,
   Bell,
-  Search,
   LogOut,
   Menu,
   X,
@@ -140,22 +139,11 @@ function MainLayout() {
           >
             <Menu size={24} />
           </button>
-
-          <div className="hidden w-72 items-center rounded-full border border-borde bg-azulSuave px-4 py-2 sm:flex lg:w-96">
-            <Search size={20} className="text-textoSuave" />
-            <input
-              className="ml-2 w-full border-none bg-transparent text-sm outline-none"
-              placeholder="Buscar..."
-            />
-          </div>
         </div>
 
         <div className="flex items-center gap-3 sm:gap-5">
           <button className="relative text-textoSuave hover:text-azul">
             <Bell size={21} />
-            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rojo text-[10px] font-bold text-white">
-              3
-            </span>
           </button>
 
           <div className="hidden h-6 w-px bg-borde sm:block" />
