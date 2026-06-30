@@ -111,8 +111,8 @@ function Dashboard() {
     {
       titulo: "Total comprado",
       valor: formatoKg(resumen?.total_comprado_kg),
-      indicador: "+12%",
-      indicadorClase: "text-green-700",
+      indicador: "Según registros",
+      indicadorClase: "text-textoSuave",
       icono: ShoppingCart,
       cajaIcono: "bg-azulClaro text-azul2",
     },
@@ -262,7 +262,7 @@ function Dashboard() {
                 {alertas.length} alerta(s) de stock bajo
               </p>
               <p className="text-sm">
-                Existen lotes con menos de 50 kg disponibles.
+                Existen lotes por debajo del umbral configurado.
               </p>
             </div>
           </div>

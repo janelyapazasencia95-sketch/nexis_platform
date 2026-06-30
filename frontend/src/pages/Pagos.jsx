@@ -411,7 +411,7 @@ function Pagos() {
               <CheckCircle size={22} />
             </span>
             <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-[#166534]">
-              +12% vs mes ant.
+              Datos actuales
             </span>
           </div>
 
