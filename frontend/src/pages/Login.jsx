@@ -38,7 +38,7 @@ function Login() {
     setMensajeRecuperacion("");
 
     const usuarioLimpio = username.trim();
-    const passwordLimpio = password.trim();
+    const passwordLimpio = password;
 
     await login(usuarioLimpio, passwordLimpio, recordar);
 

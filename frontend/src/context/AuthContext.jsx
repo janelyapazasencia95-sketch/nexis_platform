@@ -12,11 +12,17 @@ function limpiarSesionGuardada() {
   sessionStorage.removeItem("nexis_token");
 }
 
-function obtenerUsuarioGuardado() {
+function obtenerTokenGuardado() {
   return (
-    localStorage.getItem("nexis_usuario") ||
-    sessionStorage.getItem("nexis_usuario")
+    localStorage.getItem("nexis_token") ||
+    sessionStorage.getItem("nexis_token")
   );
+}
+
+function obtenerStorageActivo() {
+  if (localStorage.getItem("nexis_token")) return localStorage;
+  if (sessionStorage.getItem("nexis_token")) return sessionStorage;
+  return null;
 }
 
 export function AuthProvider({ children }) {
@@ -24,18 +30,33 @@ export function AuthProvider({ children }) {
   const [cargandoSesion, setCargandoSesion] = useState(true);
 
   useEffect(() => {
-    const usuarioGuardado = obtenerUsuarioGuardado();
+    const validarSesion = async () => {
+      const token = obtenerTokenGuardado();
+      const storage = obtenerStorageActivo();
 
-    if (usuarioGuardado) {
-      try {
-        setUsuario(JSON.parse(usuarioGuardado));
-      } catch (error) {
-        console.error("Error leyendo sesión guardada:", error);
+      if (!token || !storage) {
         limpiarSesionGuardada();
+        setUsuario(null);
+        setCargandoSesion(false);
+        return;
       }
-    }
 
-    setCargandoSesion(false);
+      try {
+        const respuesta = await api.get("/usuarios/me/");
+        const usuarioActual = respuesta.data;
+
+        storage.setItem("nexis_usuario", JSON.stringify(usuarioActual));
+        setUsuario(usuarioActual);
+      } catch (error) {
+        console.warn("Sesión inválida o expirada:", error);
+        limpiarSesionGuardada();
+        setUsuario(null);
+      } finally {
+        setCargandoSesion(false);
+      }
+    };
+
+    validarSesion();
   }, []);
 
   const login = async (username, password, recordar = false) => {
