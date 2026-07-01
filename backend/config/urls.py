@@ -24,6 +24,7 @@ from config.export_wrappers import (
 )
 
 urlpatterns = [
+    path("api/pasarela/", include("pasarela.urls")),
     path('api/reportes/exportar-compras-excel/', exportar_compras_excel_seguro, name='exportar_compras_excel_seguro'),
     path('api/reportes/exportar-compras-pdf/', exportar_compras_pdf_seguro, name='exportar_compras_pdf_seguro'),
     path('api/reportes/exportar-proveedores-pdf/', exportar_proveedores_pdf_seguro, name='exportar_proveedores_pdf_seguro'),

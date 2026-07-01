@@ -224,3 +224,16 @@ if not DEBUG:
     X_FRAME_OPTIONS = "DENY"
     SECURE_REFERRER_POLICY = "same-origin"
 # === END NEXIS PRODUCTION SECURITY FINAL ===
+
+
+# Stripe Sandbox / Test Mode
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_CURRENCY = os.environ.get("STRIPE_CURRENCY", "pen").lower()
+STRIPE_SUCCESS_URL = os.environ.get(
+    "STRIPE_SUCCESS_URL",
+    "https://nexis.promube.com/pagos?stripe=success&session_id={CHECKOUT_SESSION_ID}",
+)
+STRIPE_CANCEL_URL = os.environ.get(
+    "STRIPE_CANCEL_URL",
+    "https://nexis.promube.com/pagos?stripe=cancel",
+)

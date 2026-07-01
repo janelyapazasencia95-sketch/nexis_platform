@@ -31,3 +31,4 @@ backend/.env.*
 backend/*.backup
 backend/.db_password_tmp
 backend/backups/
+frontend/.env.local
