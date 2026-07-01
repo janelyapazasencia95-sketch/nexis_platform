@@ -409,19 +409,7 @@ function Pagos() {
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {Number(fila.saldoPendiente || 0) > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => iniciarPagoStripe(fila.id)}
-                              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#635BFF] px-3 py-2 text-xs font-bold text-white transition hover:opacity-90"
-                              title="Pagar con Stripe"
-                            >
-                              <CreditCard size={16} />
-                              Pagar con Stripe
-                            </button>
-                          )}
-
-                          <button
+          <button
             onClick={() => abrirRegistrarPago()}
             className="flex items-center justify-center gap-2 rounded-xl bg-[#166534] px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-[#14532d]"
           >
@@ -688,6 +676,18 @@ function Pagos() {
                           >
                             <Eye size={20} />
                           </button>
+
+                          {Number(fila.saldoPendiente || 0) > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => iniciarPagoStripe(fila.id)}
+                              className="inline-flex items-center gap-1 rounded-lg bg-[#635BFF] px-3 py-2 text-xs font-bold text-white hover:opacity-90"
+                              title="Pagar con Stripe"
+                            >
+                              <CreditCard size={16} />
+                              Pagar Stripe
+                            </button>
+                          )}
 
                           <button
                             onClick={() => abrirRegistrarPago(fila.id)}
