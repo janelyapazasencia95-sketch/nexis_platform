@@ -91,8 +91,40 @@ function Pagos() {
     }
   };
 
+  const confirmarPagoStripe = async (sessionId) => {
+    try {
+      await api.post("/pasarela/stripe/confirmar-sesion/", {
+        session_id: sessionId,
+      });
+
+      alert("Pago confirmado con Stripe y registrado en NEXIS.");
+      window.history.replaceState({}, "", "/pagos");
+      await cargarDatos();
+    } catch (error) {
+      console.error(error);
+      alert(
+        error.response?.data?.error ||
+          error.response?.data?.mensaje ||
+          "No se pudo confirmar el pago con Stripe."
+      );
+    }
+  };
+
   useEffect(() => {
     cargarDatos();
+
+    const parametros = new URLSearchParams(window.location.search);
+    const estadoStripe = parametros.get("stripe");
+    const sessionId = parametros.get("session_id");
+
+    if (estadoStripe === "success" && sessionId) {
+      confirmarPagoStripe(sessionId);
+    }
+
+    if (estadoStripe === "cancel") {
+      alert("El pago con Stripe fue cancelado.");
+      window.history.replaceState({}, "", "/pagos");
+    }
   }, []);
 
   const pagosProcesados = pagos.filter((pago) => pago.estado === "PROCESADO");
@@ -262,6 +294,27 @@ function Pagos() {
     }));
   };
 
+  const iniciarPagoStripe = async (compraId) => {
+    try {
+      const respuesta = await api.post("/pasarela/stripe/crear-sesion/", {
+        compra_id: compraId,
+      });
+
+      if (!respuesta.data?.checkout_url) {
+        alert("Stripe no devolvió una URL de pago.");
+        return;
+      }
+
+      window.location.href = respuesta.data.checkout_url;
+    } catch (error) {
+      console.error(error);
+      alert(
+        error.response?.data?.error ||
+          "No se pudo iniciar el pago con Stripe."
+      );
+    }
+  };
+
   const abrirRegistrarPago = (compraId = "") => {
     const compraBase =
       filasCompras.find((fila) => String(fila.id) === String(compraId)) ||
@@ -356,7 +409,19 @@ function Pagos() {
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <button
+          {Number(fila.saldoPendiente || 0) > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => iniciarPagoStripe(fila.id)}
+                              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#635BFF] px-3 py-2 text-xs font-bold text-white transition hover:opacity-90"
+                              title="Pagar con Stripe"
+                            >
+                              <CreditCard size={16} />
+                              Pagar con Stripe
+                            </button>
+                          )}
+
+                          <button
             onClick={() => abrirRegistrarPago()}
             className="flex items-center justify-center gap-2 rounded-xl bg-[#166534] px-5 py-3 text-sm font-bold text-white shadow-md transition hover:bg-[#14532d]"
           >
