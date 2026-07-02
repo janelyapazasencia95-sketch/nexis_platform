@@ -28,3 +28,111 @@ body {
   background: #d3e4fe;
   border-radius: 10px;
 }
+
+/* === NEXIS MENU FINAL START === */
+
+/* Solo afecta el menú lateral izquierdo */
+.nexis-sidebar {
+  background: #ffffff !important;
+  border-right: 1px solid #d8eeee !important;
+}
+
+/* Separa más los botones del menú */
+.nexis-sidebar nav {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+/* Estado normal: blanco */
+.nexis-sidebar nav a {
+  background: #ffffff !important;
+  color: #174545 !important;
+  border: 1px solid #d8eeee !important;
+  border-radius: 14px !important;
+  padding-top: 13px !important;
+  padding-bottom: 13px !important;
+  box-shadow: 0 6px 14px rgba(0, 120, 111, 0.05) !important;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+/* Iconos normales */
+.nexis-sidebar nav a svg {
+  color: #087f79 !important;
+  stroke: #087f79 !important;
+}
+
+/* Hover: turquesa oscuro */
+.nexis-sidebar nav a:hover {
+  background: linear-gradient(135deg, #00786f 0%, #079a9a 55%, #18c9c9 100%) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 12px 24px rgba(0, 120, 111, 0.28) !important;
+  transform: translateX(3px) !important;
+}
+
+/* Iconos en hover */
+.nexis-sidebar nav a:hover svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Página activa: blanco, no todo turquesa */
+.nexis-sidebar nav a[aria-current="page"] {
+  background: #ffffff !important;
+  color: #006d68 !important;
+  border-color: #9adbd8 !important;
+  box-shadow: inset 4px 0 0 #00786f, 0 8px 18px rgba(0, 120, 111, 0.10) !important;
+}
+
+/* Icono de página activa */
+.nexis-sidebar nav a[aria-current="page"] svg {
+  color: #006d68 !important;
+  stroke: #006d68 !important;
+}
+
+/* Al pasar mouse por el activo también se vuelve turquesa */
+.nexis-sidebar nav a[aria-current="page"]:hover {
+  background: linear-gradient(135deg, #00786f 0%, #079a9a 55%, #18c9c9 100%) !important;
+  color: #ffffff !important;
+}
+
+.nexis-sidebar nav a[aria-current="page"]:hover svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* No afectar botones de reportes, formularios, fotos ni paneles */
+main button,
+main a,
+form button,
+form input,
+form select,
+form textarea {
+  transform: none;
+}
+
+/* === NEXIS MENU FINAL END === */
+
+
+/* === NEXIS LIGHT BACKGROUND START === */
+
+/* Fondo general turquesa clarito */
+body {
+  background: #F2FBFB !important;
+}
+
+/* Fondo principal de las páginas internas */
+.bg-fondo,
+.bg-azulSuave {
+  background-color: #F2FBFB !important;
+}
+
+/* Mantiene tarjetas y formularios blancos, sin afectar fotos ni inputs */
+main section,
+main article {
+  border-color: #D7EFEF;
+}
+
+/* === NEXIS LIGHT BACKGROUND END === */
+

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, Group
-from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+
+from .models import PerfilUsuario
 
 
 class RolSerializer(serializers.ModelSerializer):
@@ -13,6 +14,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
     nombre_completo = serializers.SerializerMethodField()
     rol = serializers.SerializerMethodField()
     groups_names = serializers.SerializerMethodField()
+    foto_perfil_url = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -26,6 +28,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
             "rol",
             "groups",
             "groups_names",
+            "foto_perfil_url",
             "is_active",
             "is_staff",
             "is_superuser",
@@ -34,11 +37,12 @@ class UsuarioSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             "id",
+            "groups_names",
+            "foto_perfil_url",
             "is_staff",
             "is_superuser",
             "last_login",
             "date_joined",
-            "groups_names",
         ]
         extra_kwargs = {
             "groups": {"required": False},
@@ -50,20 +54,56 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
     def get_rol(self, obj):
         grupo = obj.groups.first()
-        return grupo.name if grupo else "Sin rol"
+        if grupo:
+            return grupo.name
+        if obj.is_superuser or obj.is_staff:
+            return "Administrador"
+        return "Sin rol"
 
     def get_groups_names(self, obj):
         return [grupo.name for grupo in obj.groups.all()]
 
+    def get_foto_perfil_url(self, obj):
+        perfil = getattr(obj, "perfil", None)
+
+        if not perfil or not perfil.foto_perfil:
+            return ""
+
+        url = perfil.foto_perfil.url
+        request = self.context.get("request")
+
+        if request:
+            return request.build_absolute_uri(url)
+
+        return url
+
 
 class CrearUsuarioSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True)
-    rol = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    nombre_completo = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True,
+    )
+    password = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True,
+    )
+    rol = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=True,
+    )
     groups = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all(),
         many=True,
         required=False,
         write_only=True,
+    )
+    foto_perfil = serializers.ImageField(
+        write_only=True,
+        required=False,
+        allow_null=True,
     )
 
     class Meta:
@@ -73,62 +113,98 @@ class CrearUsuarioSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
+            "nombre_completo",
             "password",
             "rol",
             "groups",
+            "foto_perfil",
             "is_active",
         ]
 
-    def validate_password(self, value):
-        validate_password(value)
-        return value
+    def validate(self, attrs):
+        if self.instance is None and not attrs.get("password"):
+            raise serializers.ValidationError({
+                "password": "La contraseña es obligatoria para crear un usuario."
+            })
+        return attrs
 
-    def validate_rol(self, value):
-        if not value:
-            return value
+    def _aplicar_nombre_completo(self, usuario, nombre_completo):
+        if not nombre_completo:
+            return
 
-        if not Group.objects.filter(name=value).exists():
-            raise serializers.ValidationError(
-                "El rol seleccionado no existe en el sistema."
-            )
+        partes = nombre_completo.strip().split()
+        usuario.first_name = partes[0] if partes else ""
+        usuario.last_name = " ".join(partes[1:]) if len(partes) > 1 else ""
 
-        return value
+    def _obtener_grupo_por_rol(self, rol):
+        if not rol:
+            return None
+
+        if str(rol).isdigit():
+            return Group.objects.filter(id=int(rol)).first()
+
+        return Group.objects.filter(name=rol).first()
+
+    def _asignar_roles(self, usuario, grupos=None, rol=None):
+        if grupos is not None:
+            usuario.groups.set(grupos)
+            return
+
+        grupo = self._obtener_grupo_por_rol(rol)
+        if grupo:
+            usuario.groups.set([grupo])
+
+    def _guardar_foto(self, usuario, foto):
+        if not foto:
+            return
+
+        perfil, _ = PerfilUsuario.objects.get_or_create(user=usuario)
+
+        if perfil.foto_perfil:
+            perfil.foto_perfil.delete(save=False)
+
+        perfil.foto_perfil = foto
+        perfil.save()
 
     def create(self, validated_data):
-        rol = validated_data.pop("rol", None)
-        grupos = validated_data.pop("groups", [])
-        password = validated_data.pop("password")
+        nombre_completo = validated_data.pop("nombre_completo", "")
+        password = validated_data.pop("password", "")
+        rol = validated_data.pop("rol", "")
+        grupos = validated_data.pop("groups", None)
+        foto = validated_data.pop("foto_perfil", None)
 
         usuario = User(**validated_data)
+        self._aplicar_nombre_completo(usuario, nombre_completo)
+
         usuario.set_password(password)
         usuario.save()
 
-        if grupos:
-            usuario.groups.set(grupos)
-        elif rol:
-            grupo = Group.objects.get(name=rol)
-            usuario.groups.add(grupo)
+        self._asignar_roles(usuario, grupos=grupos, rol=rol)
+        self._guardar_foto(usuario, foto)
 
         return usuario
 
     def update(self, instance, validated_data):
-        rol = validated_data.pop("rol", None)
+        nombre_completo = validated_data.pop("nombre_completo", "")
+        password = validated_data.pop("password", "")
+        rol = validated_data.pop("rol", "")
         grupos = validated_data.pop("groups", None)
-        password = validated_data.pop("password", None)
+        foto = validated_data.pop("foto_perfil", None)
 
         for campo, valor in validated_data.items():
             setattr(instance, campo, valor)
 
+        self._aplicar_nombre_completo(instance, nombre_completo)
+
         if password:
-            validate_password(password, user=instance)
             instance.set_password(password)
 
         instance.save()
 
-        if grupos is not None:
-            instance.groups.set(grupos)
-        elif rol:
-            grupo = Group.objects.get(name=rol)
-            instance.groups.set([grupo])
+        self._asignar_roles(instance, grupos=grupos, rol=rol)
+        self._guardar_foto(instance, foto)
 
         return instance
+
+    def to_representation(self, instance):
+        return UsuarioSerializer(instance, context=self.context).data

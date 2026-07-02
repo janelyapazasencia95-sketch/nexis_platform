@@ -1,7 +1,6 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User, Group
 from django.db.models import Q
-
 from rest_framework import viewsets, status
 from rest_framework.decorators import (
     api_view,
@@ -10,6 +9,7 @@ from rest_framework.decorators import (
     authentication_classes,
     throttle_classes,
 )
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -56,7 +56,7 @@ def login_usuario(request):
         {
             "mensaje": "Inicio de sesión correcto.",
             "token": token.key,
-            "usuario": UsuarioSerializer(usuario).data,
+            "usuario": UsuarioSerializer(usuario, context={"request": request}).data,
         },
         status=status.HTTP_200_OK,
     )
@@ -76,20 +76,28 @@ def logout_usuario(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def usuario_actual(request):
-    return Response(UsuarioSerializer(request.user).data)
+    return Response(
+        UsuarioSerializer(request.user, context={"request": request}).data
+    )
 
 
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by("-date_joined")
     permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_serializer_class(self):
-        if self.action == "create":
+        if self.action in ["create", "update", "partial_update"]:
             return CrearUsuarioSerializer
         return UsuarioSerializer
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = (
+            User.objects.all()
+            .select_related("perfil")
+            .prefetch_related("groups")
+            .order_by("-date_joined")
+        )
 
         buscar = self.request.query_params.get("buscar")
         activo = self.request.query_params.get("activo")
@@ -116,7 +124,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         return Response(
             {
                 "mensaje": "Usuario activado correctamente.",
-                "usuario": UsuarioSerializer(usuario).data,
+                "usuario": UsuarioSerializer(usuario, context={"request": request}).data,
             },
             status=status.HTTP_200_OK,
         )
@@ -137,7 +145,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         return Response(
             {
                 "mensaje": "Usuario desactivado correctamente.",
-                "usuario": UsuarioSerializer(usuario).data,
+                "usuario": UsuarioSerializer(usuario, context={"request": request}).data,
             },
             status=status.HTTP_200_OK,
         )
